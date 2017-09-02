@@ -5,8 +5,8 @@
 - pandas
 
 _For testing_
-Nose
-Mock
+- Nose
+- Mock
 
 ### Assumptions
 
@@ -18,7 +18,11 @@ The defaults will take an `apache_httpd.log` and produce an `apache_httpd.msg` d
 
 ### Usage
 
-Feed a log file to `parse_log_file.py` and a dataframe will be generated in msgpack format. This allows a workable format to be used for quick reporting.
+Feed a log file to `parse_log_file.py` and a dataframe will be generated in msgpack format. This allows a workable format to be used for quick reporting via `run_report.py`.
+
+**The argument `--help` can be passed for a detailed usage on both files.**
+
+Sample of default parsing
 
 ```
 python parse_log_file.py apache_httpd.log
