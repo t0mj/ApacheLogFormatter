@@ -4,6 +4,10 @@
 - python 3.6
 - pandas
 
+_For testing_
+Nose
+Mock
+
 ### Assumptions
 
 Apache access log in the following format:
@@ -45,4 +49,9 @@ python run_report.py --top unsuccessful -u
 Run a detailed report on the top 10 ip addresses and the top 5 page requests
 ```
 python run_report.py --detailed_ips
+```
+
+Run unit tests
+```
+nosetests -s tests/unit_tests.py
 ```

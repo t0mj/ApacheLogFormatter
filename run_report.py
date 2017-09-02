@@ -16,7 +16,8 @@ class ReportRunner(object):
             self.df = self.get_df()
             self.run_reports(**args)
 
-    def run_reports(self, full, top, success_percent, unsuccess_percent, detailed_ips, dataframe_file, return_type):
+    def run_reports(self, full, top, success_percent, unsuccess_percent, detailed_ips,
+                    dataframe_file, return_type):
         if full or top:
             if full or top == 'requests':
                 self.top_10_requests()
