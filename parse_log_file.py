@@ -14,9 +14,9 @@ def parse_log_file(log_file, chunks):
     path, input_file = os.path.split(log_file)
     # Safely create the output file
     if '.log' in input_file:
-        output_file = input_file.replace('.log', '.msg')
+        output_file = path + input_file.replace('.log', '.msg')
     else:
-        output_file = input_file + '.msg'
+        output_file = path + input_file + '.msg'
     data_list = []
     with open(input_file) as f:
         for line in f:
@@ -31,6 +31,8 @@ def parse_log_file(log_file, chunks):
         if data_list:
             # Get the final chunk if there is one
             convert_chunk_to_msgpack(data_list, output_file)
+
+    print(f'Dataframe created and located at {output_file}')
 
 
 # Convert chunk to msgpack
