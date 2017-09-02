@@ -9,10 +9,14 @@ import textwrap
 
 
 class ReportRunner(object):
-    def __init__(self, full, top, success_percent, unsuccess_percent, detailed_ips, dataframe_file, return_type):
-        self.dataframe_file = dataframe_file
-        self.df = self.get_df()
+    def __init__(self, args=[], run_now=False):
         self.output = []
+        if run_now:
+            self.dataframe_file = args['dataframe_file']
+            self.df = self.get_df()
+            self.run_reports(**args)
+
+    def run_reports(self, full, top, success_percent, unsuccess_percent, detailed_ips, dataframe_file, return_type):
         if full or top:
             if full or top == 'requests':
                 self.top_10_requests()
@@ -29,7 +33,7 @@ class ReportRunner(object):
         if return_type == 'txt':
             f = open('apache_httpd_results.txt', 'w')
             for line in self.output:
-                f.write(line)
+                f.write(line + '\n')
         else:
             for line in self.output:
                 print(line)
@@ -37,11 +41,15 @@ class ReportRunner(object):
 
     def get_df(self):
         list_of_dfs = pd.read_msgpack(self.dataframe_file)
-        df = pd.concat(list_of_dfs)
+        # This checks if there is no list of DF's in the msg from only 1 chunk
+        if isinstance(list_of_dfs, list):
+            df = pd.concat(list_of_dfs)
+        else:
+            df = list_of_dfs
         return df
 
     def top_10_requests(self):
-        self.output.append("\nTop 10 requests:\n")
+        self.output.append("\nTop 10 requests:")
         series = self.df['resource']
         series = series.str.split('?').str[0]
         self.output.append('\nResource\t\tNumber of requests')
@@ -60,7 +68,7 @@ class ReportRunner(object):
         self.output.append("\n{:.2%}".format(percent_success))
 
     def top_10_unsuccessful_requests(self):
-        self.output.append("\nTop 10 unsuccessful requests:\n")
+        self.output.append("\nTop 10 unsuccessful requests:")
         query_df = self.df.query('status < 200 | status > 300')
         series = query_df['resource']
         series = series.str.split('?').str[0]
@@ -73,7 +81,7 @@ class ReportRunner(object):
         self.output.append('\n' + self.df['ip'].value_counts()[:10].to_string())
 
     def top_10_ips_detailed(self):
-        self.output.append("\nTop 10 ip requests and detailed resources:\n")
+        self.output.append("\nTop 10 ip requests and detailed resources:")
         top_10_series = self.df['ip'].value_counts()[:10]
         for ip, requests in top_10_series.iteritems():
             self.output.append(f"\nTop 5 Requests for: {ip}")
@@ -85,9 +93,9 @@ class ReportRunner(object):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
-        description=textwrap.dedent('''\
-                                    Generates a report based on an apache_httpd dataframe.
-                                    By default searches for an apache_httpd.msg dataframe.'''))
+                                     description=textwrap.dedent('''\
+                                     Generates a report based on an apache_httpd dataframe.
+                                     By default searches for an apache_httpd.msg dataframe.'''))
     parser.add_argument('-f', '--full', action='store_true', default=False,
                         help='Runs every report.')
     parser.add_argument('--top', choices=['requests', 'unsuccessful', 'ips'],
@@ -111,4 +119,4 @@ if __name__ == "__main__":
     if not any(args.values()):
         parser.error('No arguments provided.')
 
-    ReportRunner(**args)
+    ReportRunner(args, run_now=True)
