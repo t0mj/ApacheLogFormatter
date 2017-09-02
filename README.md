@@ -40,7 +40,7 @@ Run a full report
 python run_report.py -f
 ```
 
-Use a custom named dataframe and output to txt file
+Use a custom named dataframe and output to txt file. Output will be found in `apache_httpd_results.txt`
 ```
 python run_report.py -f -df apache_httpd_2017-01-01.msg --output txt
 ```
